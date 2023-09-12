@@ -2,6 +2,37 @@ from tkinter import *
 import time
 from psutil import disk_partitions, disk_usage, virtual_memory, cpu_percent
 from tabulate import tabulate
+import http.server
+import socketserver
+
+# Create a custom request handler
+class CustomHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/cpu":
+            cpu_use = cpu_percent(interval=1)
+            response = "CPU Usage: {}%".format(cpu_use)
+        elif self.path == "/ram":
+            ram_usage = virtual_memory()
+            ram_usage = dict(ram_usage._asdict())
+            for key in ram_usage:
+                if key != 'percent':
+                    ram_usage[key] = conversor_bytes_to_gb(ram_usage[key])
+            response = "RAM Usage: {} GB / {} GB ({}%)".format(
+                ram_usage["used"],
+                ram_usage["total"],
+                ram_usage["percent"]
+            )
+        elif self.path == "/disk":
+            all_disk_info()
+            response = "Disk Usage: " + infoTabulated
+        else:
+            # Serve static files (e.g., HTML, CSS)
+            super().do_GET()
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(response.encode())
 
 
 window = Tk()
@@ -109,3 +140,11 @@ if __name__=='__main__':
     window.mainloop()
 
 window.mainloop()
+
+# Create a server instance
+PORT = 8000  # Choose an available port
+server = socketserver.TCPServer(("192.168.1.128", PORT), CustomHandler)
+
+# Run the server
+print(f"Server started on port {PORT}")
+server.serve_forever()
