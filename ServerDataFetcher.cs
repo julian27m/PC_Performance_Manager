@@ -4,6 +4,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
 
+[System.Serializable]
+public class ComputerData
+{
+    public string CPUUsage;
+    public string RAMUsage;
+    public string DiskUsage;
+}
+
 public class ServerDataFetcher : MonoBehaviour
 {
     public TextMeshPro cpuTextMesh; // Reference to your TextMeshPro object for CPU
@@ -12,83 +20,36 @@ public class ServerDataFetcher : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(FetchCPUPercentage());
-        StartCoroutine(FetchRAMUsage());
-        StartCoroutine(FetchDiskSpace());
+        StartCoroutine(FetchData());
     }
 
-    IEnumerator FetchCPUPercentage()
+    IEnumerator FetchData()
     {
-        while (true) // Continuously fetch CPU data
+        while (true) // Continuously fetch data
         {
-            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/cpu"))
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/cpu"))
+            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/data"))
             {
                 yield return webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
-                    string cpuData = webRequest.downloadHandler.text;
-                    // Update your TextMeshPro object with the CPU data
-                    cpuTextMesh.text = cpuData;
+                    string jsonData = webRequest.downloadHandler.text;
+
+                    // Parse the JSON data into a ComputerData object
+                    ComputerData computerData = JsonUtility.FromJson<ComputerData>(jsonData);
+
+                    // Update your TextMeshPro objects with the parsed data
+                    cpuTextMesh.text = "CPU Usage: " + computerData.CPUUsage;
+                    ramTextMesh.text = "RAM Usage: " + computerData.RAMUsage;
+                    diskTextMesh.text = "Disk Usage: " + computerData.DiskUsage;
                 }
                 else
                 {
-                    Debug.LogError("Error fetching CPU data: " + webRequest.error);
+                    Debug.LogError("Error fetching data: " + webRequest.error);
                 }
             }
 
-            yield return new WaitForSeconds(5f); // Adjust the refresh rate as needed
-        }
-    }
-
-    IEnumerator FetchRAMUsage()
-    {
-        while (true) // Continuously fetch RAM data
-        {
-            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/ram"))
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/ram"))
-            {
-                yield return webRequest.SendWebRequest();
-
-                if (webRequest.result == UnityWebRequest.Result.Success)
-                {
-                    string ramData = webRequest.downloadHandler.text;
-                    // Update your TextMeshPro object with the RAM data
-                    ramTextMesh.text = ramData;
-                }
-                else
-                {
-                    Debug.LogError("Error fetching RAM data: " + webRequest.error);
-                }
-            }
-
-            yield return new WaitForSeconds(5f); // Adjust the refresh rate as needed
-        }
-    }
-
-    IEnumerator FetchDiskSpace()
-    {
-        while (true) // Continuously fetch Disk data
-        {
-            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/disk"))
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/disk"))
-            {
-                yield return webRequest.SendWebRequest();
-
-                if (webRequest.result == UnityWebRequest.Result.Success)
-                {
-                    string diskData = webRequest.downloadHandler.text;
-                    // Update your TextMeshPro object with the Disk data
-                    diskTextMesh.text = diskData;
-                }
-                else
-                {
-                    Debug.LogError("Error fetching Disk data: " + webRequest.error);
-                }
-            }
-
-            yield return new WaitForSeconds(5f); // Adjust the refresh rate as needed
+            yield return new WaitForSeconds(5f);
         }
     }
 }
