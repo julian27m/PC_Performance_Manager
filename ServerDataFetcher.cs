@@ -21,7 +21,8 @@ public class ServerDataFetcher : MonoBehaviour
     {
         while (true) // Continuously fetch CPU data
         {
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.1.128:8000/cpu"))
+            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/cpu"))
+            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/cpu"))
             {
                 yield return webRequest.SendWebRequest();
 
@@ -45,7 +46,8 @@ public class ServerDataFetcher : MonoBehaviour
     {
         while (true) // Continuously fetch RAM data
         {
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.1.128:8000/ram"))
+            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/ram"))
+            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/ram"))
             {
                 yield return webRequest.SendWebRequest();
 
@@ -69,7 +71,8 @@ public class ServerDataFetcher : MonoBehaviour
     {
         while (true) // Continuously fetch Disk data
         {
-            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.1.128:8000/disk"))
+            //Seneca using (UnityWebRequest webRequest = UnityWebRequest.Get("http://192.168.126.1:8000/disk"))
+            using (UnityWebRequest webRequest = UnityWebRequest.Get("http://157.253.192.187:8000/disk"))
             {
                 yield return webRequest.SendWebRequest();
 
