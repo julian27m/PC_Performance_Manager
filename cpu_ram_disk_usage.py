@@ -101,6 +101,8 @@ def all_disk_info():
     return_all = []
     for i in get_device_names():
         return_all.append(disk_info(i))
+    #print(return_all[0])
+    #print(return_all[0]['Free'])
     return return_all
 
 #Title Program
@@ -143,7 +145,7 @@ window.mainloop()
 
 # Create a server instance
 PORT = 8000  # Choose an available port
-server = socketserver.TCPServer(("192.168.1.128", PORT), CustomHandler)
+server = socketserver.TCPServer(("192.168.0.132", PORT), CustomHandler)
 
 # Run the server
 print(f"Server started on port {PORT}")
