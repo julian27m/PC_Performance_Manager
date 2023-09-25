@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 using TMPro;
 
 [System.Serializable]
-public class ComputerData
+public class ComputerDynamicData
 {
     public string CPUUsage;
     public string RAMUsage;
@@ -14,9 +14,9 @@ public class ComputerData
 
 public class ServerDataFetcher : MonoBehaviour
 {
-    public TextMeshPro cpuTextMesh; // Reference to your TextMeshPro object for CPU
-    public TextMeshPro ramTextMesh; // Reference to your TextMeshPro object for RAM
-    public TextMeshPro diskTextMesh; // Reference to your TextMeshPro object for Disk
+    public TextMeshPro cpuTextMesh; // Reference to the TextMeshPro object for CPU
+    public TextMeshPro ramTextMesh; // Reference to the TextMeshPro object for RAM
+    public TextMeshPro diskTextMesh; // Reference to the TextMeshPro object for Disk
 
     void Start()
     {
@@ -35,10 +35,10 @@ public class ServerDataFetcher : MonoBehaviour
                 {
                     string jsonData = webRequest.downloadHandler.text;
 
-                    // Parse the JSON data into a ComputerData object
-                    ComputerData computerData = JsonUtility.FromJson<ComputerData>(jsonData);
+                    // Parse the JSON data into a ComputerDynamicData object
+                    ComputerDynamicData computerData = JsonUtility.FromJson<ComputerDynamicData>(jsonData);
 
-                    // Update your TextMeshPro objects with the parsed data
+                    // Update the TextMeshPro objects with the parsed data
                     cpuTextMesh.text = "CPU Usage: " + computerData.CPUUsage;
                     ramTextMesh.text = "RAM Usage: " + computerData.RAMUsage;
                     diskTextMesh.text = "Disk Usage: " + computerData.DiskUsage;
@@ -49,7 +49,7 @@ public class ServerDataFetcher : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(5f); // Refresh rate
         }
     }
 }
