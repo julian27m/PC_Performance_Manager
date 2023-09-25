@@ -14,9 +14,9 @@ public class ComputerDynamicData
 
 public class ServerDataFetcher : MonoBehaviour
 {
-    public TextMeshPro cpuTextMesh; // Reference to the TextMeshPro object for CPU
-    public TextMeshPro ramTextMesh; // Reference to the TextMeshPro object for RAM
-    public TextMeshPro diskTextMesh; // Reference to the TextMeshPro object for Disk
+    public TextMeshPro cpuTextMesh; // Reference to your TextMeshPro object for CPU
+    public TextMeshPro ramTextMesh; // Reference to your TextMeshPro object for RAM
+    public TextMeshPro diskTextMesh; // Reference to your TextMeshPro object for Disk
 
     void Start()
     {
@@ -38,10 +38,13 @@ public class ServerDataFetcher : MonoBehaviour
                     // Parse the JSON data into a ComputerDynamicData object
                     ComputerDynamicData computerData = JsonUtility.FromJson<ComputerDynamicData>(jsonData);
 
-                    // Update the TextMeshPro objects with the parsed data
+                    // Update your TextMeshPro objects with the parsed data
                     cpuTextMesh.text = "CPU Usage: " + computerData.CPUUsage;
+                    // Debug.Log("CPU Usage: " + computerData.CPUUsage);
                     ramTextMesh.text = "RAM Usage: " + computerData.RAMUsage;
+                    // Debug.Log("RAM Usage: " + computerData.RAMUsage);
                     diskTextMesh.text = "Disk Usage: " + computerData.DiskUsage;
+                    // Debug.Log("Disk Usage: " + computerData.DiskUsage);
                 }
                 else
                 {
@@ -49,7 +52,7 @@ public class ServerDataFetcher : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(5f); // Refresh rate
+            yield return new WaitForSeconds(5f); // Adjust the refresh rate as needed
         }
     }
 }
