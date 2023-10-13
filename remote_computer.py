@@ -10,9 +10,12 @@ server_id = 0
 
 # Asignación de ID: el servidor central asigna IDs únicos a los clientes remotos
 def assign_client_id():
+    data = {"assign_id": True}
     response = requests.get(f"{server_address}/assign_id")
     if response.status_code == 200:
-        return response.json()["client_id"]
+        client_id = response.json()["client_id"]
+        print("Client ID assigned:", client_id)
+        return client_id
     else:
         print("Failed to assign client ID.")
         return None
@@ -44,6 +47,7 @@ def collect_data(client_id):
         "DiskUsage": disk_usage
     }
 
+    print("Collecting data:", data)
     send_data_to_server(data, client_id)
 
 if __name__ == "__main__":
