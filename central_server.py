@@ -2,25 +2,32 @@ import socket
 import json
 import threading
 
-# Dirección y puerto del servidor central
-server_ip = "0.0.0.0"  # Escucha en todas las interfaces
+server_ip = "0.0.0.0"
 server_port = 8000
-
-# Lista para almacenar las conexiones de los clientes remotos
 client_connections = []
 
-# Función para manejar las conexiones de los clientes remotos
+# Contador para asignar IDs únicos
+client_id_counter = 1
+
 def handle_client(client_socket):
+    global client_id_counter
+
+    # Asignar un ID único al cliente remoto
+    client_id = client_id_counter
+    client_id_counter += 1
+
     try:
         while True:
             data = client_socket.recv(1024)
             if not data:
                 break
 
-            # Decodificar los datos recibidos (asumimos que son JSON)
             received_data = json.loads(data.decode())
 
-            # Aquí puedes procesar los datos según tus necesidades
+            # Agregar el ID al mensaje
+            received_data["ID"] = client_id
+
+            # Procesar los datos
             print("Received data:", received_data)
 
     except Exception as e:
@@ -28,7 +35,6 @@ def handle_client(client_socket):
     finally:
         client_socket.close()
 
-# Función principal del servidor
 def run_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((server_ip, server_port))
