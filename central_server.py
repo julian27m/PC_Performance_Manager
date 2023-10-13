@@ -22,13 +22,15 @@ def handle_client(client_socket):
             if not data:
                 break
 
-            received_data = json.loads(data.decode())
-
-            # Agregar el ID al mensaje
-            received_data["ID"] = client_id
-
-            # Procesar los datos
-            print("Received data:", received_data)
+            try:
+                received_data = json.loads(data.decode())
+                # Agregar el ID al mensaje
+                received_data["ID"] = client_id
+                # Procesar los datos
+                print("Received data:", received_data)
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                # Puedes hacer algo si la decodificación del JSON falla
 
     except Exception as e:
         print(f"Error handling client connection: {e}")
