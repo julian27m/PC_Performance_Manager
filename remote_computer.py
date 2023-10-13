@@ -10,7 +10,6 @@ server_id = 0
 
 # Asignación de ID: el servidor central asigna IDs únicos a los clientes remotos
 def assign_client_id():
-    data = {"assign_id": True}
     response = requests.get(f"{server_address}/assign_id")
     if response.status_code == 200:
         return response.json()["client_id"]
