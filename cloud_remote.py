@@ -1,28 +1,42 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import requests
 import json
 import psutil
-import requests
 
 # Configurar la dirección de tu servidor en la nube
 server_address = "http://3.145.35.175:8080"
 
-# Definir una función para enviar datos al servidor en la nube
+def check_server_connectivity():
+    try:
+        response = requests.get(server_address)
+        response.raise_for_status()
+        print("Conexión exitosa con el servidor en nube.")
+        return True
+    except requests.exceptions.RequestException as e:
+        print(f"Error al conectarse al servidor en nube: {str(e)}")
+        return False
+
+# Definir una función para enviar datos al servidor en nube
 def send_data_to_server(data, computer_id):
     url = f"{server_address}/data/{computer_id}"
     headers = {"Content-Type": "application/json"}
-    response = requests.post(url, data=json.dumps(data), headers=headers)
-    if response.status_code == 200:
+
+    # Intentar enviar datos al servidor en nube
+    try:
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        response.raise_for_status()  # Esto lanzará una excepción si hay un error HTTP
+
         print(f"Datos enviados correctamente a {url}")
-    else:
-        print(f"Error al enviar datos a {url}: {response.status_code}, {response.text}")
+    except Exception as e:
+        print(f"Error al enviar datos a {url}: {str(e)}")
 
 class CustomHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path_segments = self.path.split("/")
         if len(path_segments) >= 3 and path_segments[2] == "data":
             computer_id = path_segments[3]
+            print(f"ID del computador: {computer_id}")  # Mensaje de depuración
 
-            print(f"Solicitud recibida desde el computador {computer_id}")
             cpu_use = psutil.cpu_percent(interval=1)
             ram_usage = psutil.virtual_memory().percent
             disk_usage = psutil.disk_usage("/").percent
@@ -36,6 +50,8 @@ class CustomHandler(BaseHTTPRequestHandler):
 
             # Enviar los datos al servidor en nube
             send_data_to_server(data, computer_id)
+
+            print(f"JSON enviado a servidor en nube: {json.dumps(data)}")  # Mensaje de depuración
         else:
             print(f"Solicitud desconocida recibida: {self.path}")
             # Manejar otras solicitudes según sea necesario
@@ -50,4 +66,7 @@ def run(server_class=HTTPServer, handler_class=CustomHandler, port=8000):
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    run()
+    if check_server_connectivity():
+        run()
+    else:
+        print("No se pudo establecer conexión con el servidor en nube. Revise la conectividad antes de iniciar el servidor local.")
