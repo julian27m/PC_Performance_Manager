@@ -19,7 +19,7 @@ def receive_data(computer_id):
         print(f"Datos recibidos de la computadora {computer_id}: {data}")  # Mensaje de depuración
 
         file_name = f'{computer_id}.json'
-        s3.put_object(Bucket='nombre-del-bucket', Key=file_name, Body=json.dumps(data))
+        s3.put_object(Bucket='colivri-computer-stats', Key=file_name, Body=json.dumps(data))
 
         return f"Datos de la computadora {computer_id} recibidos y almacenados correctamente", 200
     except Exception as e:

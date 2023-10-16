@@ -4,7 +4,7 @@ import json
 import psutil
 
 # Configurar la dirección de tu servidor en la nube
-server_address = "http://3.145.35.175:8080"
+server_address = "http://3.14.135.44:8080"
 
 def check_server_connectivity():
     try:
