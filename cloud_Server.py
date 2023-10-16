@@ -19,7 +19,9 @@ def receive_data(computer_id):
             # Devuelve los datos de la computadora con el ID especificado
             file_name = f'{computer_id}.json'
             data = s3.get_object(Bucket='colivri-computer-stats', Key=file_name)['Body'].read().decode()
-            return jsonify(data), 200
+
+            # Parsea el objeto JSON y devuelve una respuesta JSON válida
+            return jsonify(json.loads(data)), 200
         else:
             # Procesa los datos recibidos de la computadora
             data = request.json
