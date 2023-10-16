@@ -3,7 +3,7 @@ import boto3
 import json
 import os
 
-app = Flask(__name)
+app = Flask(__name__)
 
 # Utiliza os.environ para acceder a las variables de entorno
 aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
