@@ -12,7 +12,7 @@ aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
 # Configura el acceso a AWS S3
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-app.route('/data/<computer_id>', methods=['GET', 'POST'])
+@app.route('/data/<computer_id>', methods=['GET', 'POST'])
 def receive_data(computer_id):
     try:
         if request.method == 'GET':
@@ -32,6 +32,8 @@ def receive_data(computer_id):
     except Exception as e:
         print(f"Error al procesar datos de la computadora {computer_id}: {e}")  # Mensaje de depuración
         return str(e), 400
+
+
     
 @app.route('/')
 def index():
