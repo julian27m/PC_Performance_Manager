@@ -24,6 +24,10 @@ def receive_data(computer_id):
         return f"Datos de la computadora {computer_id} recibidos y almacenados correctamente", 200
     except Exception as e:
         return str(e), 400
+    
+@app.route('/')
+def index():
+    return '¡Bienvenido a mi servidor en la nube!'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
