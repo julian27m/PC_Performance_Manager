@@ -13,7 +13,7 @@ aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
 
-@app.route('/receive_data/<computer_id>', methods=['POST'])
+@app.route('/data/<computer_id>', methods=['POST'])
 def receive_data(computer_id):
     try:
         data = request.json
