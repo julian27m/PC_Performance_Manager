@@ -1,25 +1,56 @@
-from flask import Flask, request, jsonify
+import socket
+import json
+import threading
 
-app = Flask(__name__)
+server_ip = "0.0.0.0"
+server_port = 8000
+client_connections = []
 
-# Datos recopilados del servidor central
-own_data = {
-    "ID": "ServerCentral",
-    "CPUUsage": 0.0,
-    "RAMUsage": 0.0,
-    "DiskUsage": 0.0
-}
+# Contador para asignar IDs únicos
+client_id_counter = 1
 
-# Ruta para recibir datos del cliente remoto
-@app.route("/data", methods=["POST"])
-def receive_data():
-    data = request.get_json()
-    print("Received data from client:", data)
+def handle_client(client_socket):
+    global client_id_counter
 
-    # Realiza cualquier procesamiento adicional si es necesario
-    # ...
+    # Asignar un ID único al cliente remoto
+    client_id = client_id_counter
+    client_id_counter += 1
 
-    return "Data received successfully", 200
+    try:
+        while True:
+            data = client_socket.recv(1024)
+            if not data:
+                break
+
+            try:
+                received_data = json.loads(data.decode())
+                # Agregar el ID al mensaje
+                received_data["ID"] = client_id
+                # Procesar los datos
+                print("Received data:", received_data)
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                # Puedes hacer algo si la decodificación del JSON falla
+
+    except Exception as e:
+        print(f"Error handling client connection: {e}")
+    finally:
+        client_socket.close()
+
+def run_server():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((server_ip, server_port))
+    server.listen(5)
+
+    print(f"Server started on {server_ip}:{server_port}")
+
+    while True:
+        client_socket, addr = server.accept()
+        print(f"Accepted connection from {addr}")
+
+        client_connections.append(client_socket)
+        client_handler = threading.Thread(target=handle_client, args=(client_socket,))
+        client_handler.start()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    run_server()
