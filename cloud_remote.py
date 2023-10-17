@@ -4,7 +4,7 @@ import psutil
 import time
 
 # Dirección del servidor
-server_url = "http://3.14.135.44:8080/data/1"
+server_url = "http://18.220.53.136:8080/data/1"
 
 while True:
     # Obtener las estadísticas del computador remoto
