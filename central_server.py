@@ -1,56 +1,32 @@
-import socket
-import json
-import threading
+from flask import Flask, request, jsonify
 
-server_ip = "0.0.0.0"
-server_port = 8000
-client_connections = []
+app = Flask(__name__)
 
-# Contador para asignar IDs únicos
-client_id_counter = 1
+data_store = {}  # Almacenamiento local para los datos de los computadores
 
-def handle_client(client_socket):
-    global client_id_counter
-
-    # Asignar un ID único al cliente remoto
-    client_id = client_id_counter
-    client_id_counter += 1
-
+@app.route('/data/<computer_id>', methods=['GET', 'POST'])
+def receive_data(computer_id):
     try:
-        while True:
-            data = client_socket.recv(1024)
-            if not data:
-                break
+        if request.method == 'GET':
+            # Devolver los datos de la computadora con el ID especificado
+            data = data_store.get(computer_id)
+            return jsonify(data), 200 if data else 404
+        else:
+            # Procesar los datos recibidos de la computadora
+            data = request.json
+            print(f"Datos recibidos de la computadora {computer_id}: {data}")  # Mensaje de depuración
 
-            try:
-                received_data = json.loads(data.decode())
-                # Agregar el ID al mensaje
-                received_data["ID"] = client_id
-                # Procesar los datos
-                print("Received data:", received_data)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                # Puedes hacer algo si la decodificación del JSON falla
+            # Almacena los datos en el almacenamiento local
+            data_store[computer_id] = data
 
+            return f"Datos de la computadora {computer_id} recibidos y almacenados correctamente", 200
     except Exception as e:
-        print(f"Error handling client connection: {e}")
-    finally:
-        client_socket.close()
+        print(f"Error al procesar datos de la computadora {computer_id}: {e}")  # Mensaje de depuración
+        return str(e), 400
 
-def run_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((server_ip, server_port))
-    server.listen(5)
+@app.route('/')
+def index():
+    return '¡Bienvenido a mi servidor local en la nube!'
 
-    print(f"Server started on {server_ip}:{server_port}")
-
-    while True:
-        client_socket, addr = server.accept()
-        print(f"Accepted connection from {addr}")
-
-        client_connections.append(client_socket)
-        client_handler = threading.Thread(target=handle_client, args=(client_socket,))
-        client_handler.start()
-
-if __name__ == "__main__":
-    run_server()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
